@@ -28,6 +28,19 @@ def convert_to_dicts(objs):
 
     return obj_arr
 
+@csrf_exempt
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = curlmd5(request.POST['password'])
+        # user = User.objects.filter(username=username, password=password)
+        try:
+            user = User.objects.get(username=username, password=password)
+            resp = {'user_id': user.id}
+            return HttpResponse(json.dumps(resp), content_type="application/json")
+        except User.DoesNotExist:
+            return HttpResponse("user or password incorrect", status=404)
+
 
 @csrf_exempt
 def create_or_get_single(request):
@@ -42,8 +55,12 @@ def create_or_get_single(request):
         # get a user information
         # data = serializers.serialize("json", User.objects.all())
         user_id = request.GET['user_id']
-        data = get_list_or_404(User, pk=user_id)
-        return HttpResponse(convert_to_dicts(data), status=200)
+        user = get_object_or_404(User, pk=user_id)
+        # data = serializers.serialize("json", get_list_or_404(User, pk=user_id))
+        # data = json.dumps(convert_to_dicts(data))
+        resp = {'user_id': user.id,
+                'username': user.username}
+        return HttpResponse(json.dumps(resp), content_type="application/json", status=200)
 
 
 @csrf_exempt
@@ -61,11 +78,11 @@ def change_password(request):
 
 @csrf_exempt
 def new_user_view(request):
-    return  render(request, 'user/Admin.html')
+    return render(request, 'user/Admin.html')
 
 @csrf_exempt
 def change_password_view(request):
-    return  render(request, 'user/Password.html')
+    return render(request, 'user/Password.html')
 # def get_single(request):
 #     user = request.GET['user_id']
 #     data = convert_to_dicts(User.objects.filter(id=user_id))
