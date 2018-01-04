@@ -59,6 +59,13 @@ def change_password(request):
         return HttpResponse("Changing password %s successful" % user.username, status=200)
 
 
+@csrf_exempt
+def new_user_view(request):
+    return  render(request, 'user/Admin.html')
+
+@csrf_exempt
+def change_password_view(request):
+    return  render(request, 'user/Password.html')
 # def get_single(request):
 #     user = request.GET['user_id']
 #     data = convert_to_dicts(User.objects.filter(id=user_id))
