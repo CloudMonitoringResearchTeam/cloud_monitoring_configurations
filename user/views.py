@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.views import generic
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -30,32 +30,53 @@ def convert_to_dicts(objs):
 
 
 @csrf_exempt
-def create_or_get_all(request):
+def create_or_get_single(request):
     if request.method == 'POST':
         # create a new user
-        body = json.loads(request.body.decode("utf-8"))
-        username = body['username']
-        password = curlmd5(body['password'])
-
+        username = request.POST['username']
+        password = request.POST['password']
         user = User(username=username, password=password)
         user.save()
-        return HttpResponse("Creating user %s successful" % user.username)
+        return HttpResponse("Creating user %s successful" % user.username, status=201)
     elif request.method == 'GET':
-        # get all user information
-        data = serializers.serialize("json", User.objects.all())
-        return HttpResponse(data)
+        # get a user information
+        # data = serializers.serialize("json", User.objects.all())
+        user_id = request.GET['user_id']
+        data = convert_to_dicts(User.objects.filter(id=user_id))
+        return HttpResponse(data, status=200)
+
 
 @csrf_exempt
-def change_password(request, user_id):
+def change_password(request):
     if request.method == 'POST':
-        body = json.loads(request.body.decode("utf-8"))
-        password = curlmd5(body['password'])
-        user = User.objects.get(id=user_id)
+        # body = json.loads(request.body.decode("utf-8"))
+        # password = curlmd5(body['password'])
+        user_id = request.POST['user_id']
+        password = request.POST['password']
+        user = get_object_or_404(User, id=user_id)
         user.password = password
         user.save()
-        return HttpResponse("Changing password %s successful" % user.username)
+        return HttpResponse("Changing password %s successful" % user.username, status=200)
 
 
-def get_single(request, user_id):
-    data = convert_to_dicts(User.objects.filter(id=user_id))
-    return HttpResponse(data)
+# def get_single(request):
+#     user = request.GET['user_id']
+#     data = convert_to_dicts(User.objects.filter(id=user_id))
+#     return HttpResponse(data)
+
+
+# @csrf_exempt
+# def create_or_get_all(request):
+#     if request.method == 'POST':
+#         # create a new user
+#         body = json.loads(request.body.decode("utf-8"))
+#         username = body['username']
+#         password = curlmd5(body['password'])
+#
+#         user = User(username=username, password=password)
+#         user.save()
+#         return HttpResponse("Creating user %s successful" % user.username)
+#     elif request.method == 'GET':
+#         # get all user information
+#         data = serializers.serialize("json", User.objects.all())
+#         return HttpResponse(data)
