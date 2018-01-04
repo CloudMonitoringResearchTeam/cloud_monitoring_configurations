@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views import generic
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -34,7 +34,7 @@ def create_or_get_single(request):
     if request.method == 'POST':
         # create a new user
         username = request.POST['username']
-        password = request.POST['password']
+        password = curlmd5(request.POST['password'])
         user = User(username=username, password=password)
         user.save()
         return HttpResponse("Creating user %s successful" % user.username, status=201)
@@ -42,8 +42,8 @@ def create_or_get_single(request):
         # get a user information
         # data = serializers.serialize("json", User.objects.all())
         user_id = request.GET['user_id']
-        data = convert_to_dicts(User.objects.filter(id=user_id))
-        return HttpResponse(data, status=200)
+        data = get_list_or_404(User, pk=user_id)
+        return HttpResponse(convert_to_dicts(data), status=200)
 
 
 @csrf_exempt
@@ -51,8 +51,8 @@ def change_password(request):
     if request.method == 'POST':
         # body = json.loads(request.body.decode("utf-8"))
         # password = curlmd5(body['password'])
-        user_id = request.POST['user_id']
-        password = request.POST['password']
+        user_id = request.GET['user_id']
+        password = curlmd5(request.POST['password'])
         user = get_object_or_404(User, id=user_id)
         user.password = password
         user.save()
