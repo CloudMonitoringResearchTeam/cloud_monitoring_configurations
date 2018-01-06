@@ -18,4 +18,5 @@ from django.conf.urls import url
 from django.urls import include, path
 urlpatterns = [
     path('v1/user/', include('user.urls')),
+    path('v1/node/', include('node.urls'))
 ]
