@@ -30,7 +30,11 @@ def ssh_connect(ip, username, password):
 
 
 def index(request):
-    return render(request, 'user/')
+    return render(request, 'node/Node.html')
+
+
+def add_node_view(request):
+    return render(request, 'node/AddNode.html')
 
 
 @csrf_exempt
@@ -39,7 +43,7 @@ def get_father_pk(request):
     category = body['category']
     if category == 'cluster':
         node = get_object_or_404(Node, category='global')
-        resp = {'father_pk': node.father_pk}
+        resp = [{'father_pk': node.pk}]
         return JsonResponse(resp, safe=False)
     elif category == 'work':
         nodes = Node.objects.filter(category='cluster')
@@ -49,7 +53,7 @@ def get_father_pk(request):
             resp.append(node.pk)
         return JsonResponse(resp, safe=False)
 
-
+@csrf_exempt
 def create_or_delete(request):
     if request.method == 'POST':
         body = json.loads(request.body.decode("utf-8"))
@@ -63,10 +67,14 @@ def create_or_delete(request):
         pro_alert_rule_path = body['alert_rule']
         alert_conf_file_path = body['alert_file']
         if category == 'global':
-            node = get_object_or_404(Node, category='global')
+            try:
+                question = Node.objects.get(category=category)
+            except Node.DoesNotExist:
+                node = 0
             if node:
-                HttpResponse("system has already a global node", status=400)
+                return HttpResponse("system has already a global node", status=400)
             else:
+                father_pk = 0
                 Node.objects.create(name=name, category=category, father_pk=father_pk, ip=ip,
                                     username=username, password=password,
                                     pro_conf_file_path=pro_conf_file_path,
@@ -83,8 +91,13 @@ def create_or_delete(request):
     elif request.method == 'DELETE':
         body = json.loads(request.body.decode("utf-8"))
         node_id = body['node_id']
+        print(node_id)
         Node.objects.filter(id=node_id).delete()
         return HttpResponse(status=204)
+    elif request.method == 'GET':
+        data = serializers.serialize("json", Node.objects.all())
+        print(data)
+        return HttpResponse(data)
 
 @csrf_exempt
 def read_or_write_prometheus_conf_file(request):
