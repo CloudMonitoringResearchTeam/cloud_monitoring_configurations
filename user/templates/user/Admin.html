@@ -51,10 +51,8 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">系统简介</a></li>
-                <li><a href="#">操作指南</a></li>
-                <li><a href="#">常见问题</a></li>
-                <li><a href="#">配置</a></li>
+                <li><a class="exit" href="{% url 'user:login_view' %}" id="exit">退出</a></li> <!--去login页面-->
+
             </ul>
 
         </div>
@@ -66,10 +64,10 @@
 
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li class="active node"><a href="{% url 'node:index' %}">节点管理 <span class="sr-only">(current)</span></a>
+                <li class=" node"><a href="{% url 'node:index' %}">节点管理 <span class="sr-only">(current)</span></a>
                 </li>
-                <li><a href="ColonyC.html">集群配置</a></li>
-                <li><a href="GlobalC.html">全局配置</a></li>
+                <li><a href="{% url 'cluster:cluster_view' %}">集群配置</a></li>
+                <li><a href="{% url 'global:global_view' %}">全局配置</a></li>
                 <li class="selfcenter"><a href="#">个人中心</a></li>
                 <li class="admin" style="display: none"><a href="{% url 'user:new_user_view' %}">新增管理员</a></li>
                 <li class="serect" style="display: none"><a href="{% url 'user:change_password_view' %}">修改密码</a></li>
