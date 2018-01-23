@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'cluster.apps.ClusterConfig',
+    'global.apps.GlobalConfig',
+    'node.apps.NodeConfig',
     'user.apps.UserConfig',
     'django.contrib.admin',
     'django.contrib.auth',
