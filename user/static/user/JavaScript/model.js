@@ -1,25 +1,27 @@
 /**
  * Created by lenovo on 2018/1/3.
  */
-i=0;
-$(document).ready(function(){
+i = 0;
+$(document).ready(function () {
 
-    $(".selfcenter").click(function(){
-             if(i==0)
-             {
-                 $(".admin,.serect").show();
+    $(".selfcenter").click(function () {
+        if (i == 0) {
+            $(".admin,.serect").show();
 
-                 i=1;
-             }else{
-                 $(".admin,.serect").hide();
+            i = 1;
+        } else {
+            $(".admin,.serect").hide();
 
-                 i=0;
-             }
+            i = 0;
+        }
 
-            });
+    });
+
+    $(".exit").click(function () {
+        window.localStorage.clear();
+
+    });
 
 
-
-
-        });
+});
 
