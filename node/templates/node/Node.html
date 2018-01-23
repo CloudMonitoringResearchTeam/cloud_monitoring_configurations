@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+
+
+    <link rel="stylesheet" href="{% static 'node/bootstrap-3.3.7-dist/css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'node/CSS/dashboard.css' %}"/>
+
+
+    <script type="text/javascript" src="{% static 'node/Jquery/jquery-3.2.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'node/bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static "node/JavaScript/model.js" %}"></script>
+<script type="text/javascript" src="{% static 'node/JavaScript/node.js' %}"></script>
+
+    <style>
+        td, th {
+            white-space: nowrap;
+
+        }
+    </style>
+</head>
+<body onload="table(), shown()">
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">云监控配置管理系统</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a class="exit" href="{% url 'user:login_view' %}" id="exit">退出</a></li>
+                <!--去login页面-->
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li class=" node"><a href="{% url 'node:index' %}">节点管理 <span class="sr-only">(current)</span></a>
+                </li>
+                <li><a href="{% url 'cluster:cluster_view' %}">集群配置</a></li>
+                <li><a href="{% url 'global:global_view' %}">全局配置</a></li>
+                <li class="selfcenter"><a href="#">个人中心</a></li>
+                <li class="admin" style="display: none"><a href="{% url 'user:new_user_view' %}">新增管理员</a></li>
+                <li class="serect" style="display: none"><a href="{% url 'user:change_password_view' %}">修改密码</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main clearfix">
+            <div id="div1">
+                <h1 class="page-header">节点概览</h1>
+
+                <div class="row placeholders">
+                    <div class="col-xs-6 col-sm-3 placeholder">
+                        <div style="width:200px;height:200px;text-align: center;  border-radius:100px;border:solid rgb(100,100,100) 1px;border-color:#0066bb ; background-color:white">
+                            <p style="line-height: 200px;font-weight: 100;font-size: 90px;color:black"
+                               id="global"></p></div>
+                        <h4>全局管理中心</h4>
+                        <span class="text-muted">私有云的基础配置管理</span>
+                    </div>
+                    <div class="col-xs-6 col-sm-3 placeholder">
+                        <div style="width:200px;height:200px;text-align: center;  border-radius:100px;border:solid rgb(100,100,100) 1px;border-color: #0066bb ; background-color:white">
+                            <p style="line-height: 200px;font-weight: 100;font-size: 90px;color: black"
+                               id="cluster"></p></div>
+                        <h4>集群管理中心</h4>
+                        <span class="text-muted">工作节点的配置管理者</span>
+                    </div>
+                    <div class="col-xs-6 col-sm-3 placeholder">
+                        <div style="width:200px;height:200px;text-align: center;  border-radius:100px;border:solid rgb(100,100,100) 1px;border-color: #0066bb ;background-color:white">
+                            <p style="line-height: 200px;font-weight: 100;font-size: 90px;color: black"
+                               id="work"></p></div>
+                        <h4>工作节点</h4>
+                        <span class="text-muted">工作状态的业务节点</span>
+                    </div>
+                    <div class="col-xs-6 col-sm-3 placeholder">
+                         <div style="width:200px;height:200px;text-align: center;  border-radius:100px;border:solid rgb(100,100,100) 1px;border-color: #0066bb ; background-color:white">
+                            <p style="line-height: 200px;font-weight: 100;font-size: 90px;color: black"
+                               id="sleep"></p></div>
+                        <h4>休眠节点</h4>
+                        <span class="text-muted">无业务运行态的节点</span>
+                    </div>
+                </div>
+
+
+                <div class="row ">
+                    <div class="sub-header col-md-7"><h2>节点列表</h2></div>
+                    <div class="col-md-5">
+                        <h2> &nbsp;&nbsp;&nbsp;
+                            <button type="button" class="btn  active btn-primary "
+                                    onclick="newnode()">新增节点
+                            </button>
+                            <button type="button" class="btn  active btn-primary " onclick="deletall()">批量删除</button>
+                            <button type="button" class="btn  active btn-primary ">树形查看</button>
+                        </h2>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="table-responsive ">
+                    <table class="table table-striped " id="addnode" style="overflow-x:scroll;width: 200%">
+                        <thead>
+                        <tr>
+                            <th></th>
+
+                            <th>ID</th>
+                            <th>节点名称</th>
+                            <th>节点类别</th>
+                            <th>父节点ID</th>
+                            <th>IP</th>
+                            <th>promethus配置文件路径</th>
+                            <th>告警规则文件路径</th>
+                            <th>alert manager 配置文件路径</th>
+                            <th style="text-align: center">
+                                &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;
+                                操&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;作
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="tb">
+                        <!-- <tr>
+                             <td><input type="checkbox" name="category" value="" style="display: none" id="category"
+                                        name="category"/>
+                             </td>
+                             <td>11</td>
+                             <td>1,001</td>
+                             <td>Lorem</td>
+                             <td>ipsum</td>
+                             <td>dolor</td>
+                             <td>sit</td>
+                             <td>sit</td>
+                             <td>1,001</td>
+
+
+                             <td>
+
+
+                                 <button type="button" class="btn  active btn-primary node1">删除节点</button>
+                                 <button type="button" class="btn  active btn-primary node2">查看配置</button>
+                                 <button type="button" class="btn  active btn-primary node3">更新配置</button>
+                             </td>
+                         </tr>-->
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+</div>
+
+
+</body>
+</html>
